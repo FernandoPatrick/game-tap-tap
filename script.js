@@ -48,12 +48,36 @@ function isPositionSafe(x, y, minDistance = 150) {
 
 // Função para gerar uma posição válida
 function getValidPosition() {
-    const elementSize = 80; // Tamanho aproximado do emoji
-    const margin = elementSize; // Margem de segurança
-    const maxX = window.innerWidth - margin;
+    // Obter dimensões reais dos elementos baseado no CSS
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+    
+    // Tamanho do elemento varia com a tela
+    let elementSize = 80;
+    if (screenWidth <= 400) {
+        elementSize = 70;
+    }
+    if (screenHeight >= 700) {
+        elementSize = 90;
+    }
+    
+    // Margem muito grande para garantir que nada fique nas bordas
+    const margin = elementSize * 2; // Dobro do tamanho do elemento
+    const headerHeight = 80; // Altura do header
+    
+    const maxX = screenWidth - margin;
     const minX = margin;
-    const maxY = window.innerHeight - margin;
-    const minY = margin + 80; // Abaixo do header com mais espaço
+    const maxY = screenHeight - margin;
+    const minY = headerHeight + margin; // Bem abaixo do header
+    
+    // Garantir que temos espaço suficiente para spawnar
+    if (maxX <= minX || maxY <= minY) {
+        // Tela muito pequena, usar valores seguros no centro
+        return {
+            x: screenWidth / 2,
+            y: screenHeight / 2
+        };
+    }
     
     let attempts = 0;
     let x, y;
@@ -63,7 +87,7 @@ function getValidPosition() {
         x = minX + Math.random() * (maxX - minX);
         y = minY + Math.random() * (maxY - minY);
         attempts++;
-    } while (!isPositionSafe(x, y) && attempts < 50);
+    } while (!isPositionSafe(x, y, 180) && attempts < 50); // Distância mínima de 180px
     
     return { x, y };
 }
@@ -160,8 +184,10 @@ function spawnHeart() {
     
     // Obter posição válida (sem colisões)
     const position = getValidPosition();
-    heart.style.left = position.x + 'px';
-    heart.style.top = position.y + 'px';
+    
+    // Centralizar o elemento na posição (ajustar pelo tamanho do elemento)
+    heart.style.left = (position.x - 40) + 'px'; // 40 = metade do width
+    heart.style.top = (position.y - 40) + 'px';  // 40 = metade do height
     
     // Registrar posição do elemento
     const elementData = { x: position.x, y: position.y, element: heart };
@@ -220,8 +246,10 @@ function spawnCake() {
     
     // Obter posição válida (sem colisões)
     const position = getValidPosition();
-    cake.style.left = position.x + 'px';
-    cake.style.top = position.y + 'px';
+    
+    // Centralizar o elemento na posição (ajustar pelo tamanho do elemento)
+    cake.style.left = (position.x - 40) + 'px'; // 40 = metade do width
+    cake.style.top = (position.y - 40) + 'px';  // 40 = metade do height
     
     // Registrar posição do elemento
     const elementData = { x: position.x, y: position.y, element: cake };
