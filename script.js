@@ -263,6 +263,13 @@ function gameOver() {
     clearInterval(spawnInterval);
     clearInterval(cakeInterval);
     
+    // Atualizar recorde específico da dificuldade
+    const recordKey = `weddingGameRecord_${currentDifficulty}`;
+    const record = parseInt(localStorage.getItem(recordKey) || '0');
+    if (score > record) {
+        localStorage.setItem(recordKey, score.toString());
+    }
+    
     // Mostrar tela de game over
     const gameScreen = document.getElementById('gameScreen');
     const gameOverDiv = document.createElement('div');
@@ -271,15 +278,17 @@ function gameOver() {
         <h2>Oh não! 😱</h2>
         <div style="font-size: 5em;">🎂</div>
         <p>Você tocou no bolo!</p>
-        <p style="font-size: 2em; font-weight: 600;">Pontuação: ${score}</p>
+        <p style="font-size: 2em; font-weight: 600; margin: 20px 0;">Pontuação: ${score}</p>
+        <div style="background: rgba(255, 255, 255, 0.2); padding: 12px 20px; border-radius: 15px; margin-bottom: 25px;">
+            <p style="font-size: 1em; margin: 0;">🏆 Recorde (${getDifficultyName()}): ${Math.max(score, record)}</p>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 280px;">
+            <button onclick="restartGameFromOver()" style="margin: 0;">Jogar Novamente</button>
+            <button onclick="goToMenu()" style="margin: 0; background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.2) 100%);">Voltar ao Menu</button>
+        </div>
     `;
     
     gameScreen.appendChild(gameOverDiv);
-    
-    // Após 3 segundos, mostrar tela final
-    setTimeout(() => {
-        endGame();
-    }, 3000);
 }
 
 function updateScore() {
@@ -312,10 +321,11 @@ function endGame() {
         </div>
     `;
     
-    // Atualizar recorde
-    const record = parseInt(localStorage.getItem('weddingGameRecord') || '0');
+    // Atualizar recorde específico da dificuldade
+    const recordKey = `weddingGameRecord_${currentDifficulty}`;
+    const record = parseInt(localStorage.getItem(recordKey) || '0');
     if (score > record) {
-        localStorage.setItem('weddingGameRecord', score.toString());
+        localStorage.setItem(recordKey, score.toString());
     }
     
     // Mostrar tela final
@@ -336,14 +346,69 @@ function endGame() {
     }
     document.getElementById('messageDisplay').textContent = message;
     
-    // Mostrar recorde
+    // Mostrar recorde da dificuldade atual
     const currentRecord = Math.max(score, record);
-    document.getElementById('recordDisplay').innerHTML = `🏆 Recorde: ${currentRecord} pontos`;
+    document.getElementById('recordDisplay').innerHTML = `🏆 Recorde (${getDifficultyName()}): ${currentRecord} pontos`;
 }
 
 function restartGame() {
     document.getElementById('endScreen').classList.remove('active');
-    startGame();
+    startGame(currentDifficulty); // Jogar novamente com a mesma dificuldade
+}
+
+function restartGameFromOver() {
+    // Limpar a tela de game over
+    const gameScreen = document.getElementById('gameScreen');
+    while (gameScreen.firstChild) {
+        gameScreen.removeChild(gameScreen.firstChild);
+    }
+    
+    // Recriar header
+    gameScreen.innerHTML = `
+        <div class="game-header">
+            <div class="score">❤️ <span id="scoreDisplay">0</span></div>
+            <div class="timer">⏱️ <span id="timerDisplay">30</span>s</div>
+        </div>
+    `;
+    
+    // Iniciar novo jogo com a mesma dificuldade
+    startGame(currentDifficulty);
+}
+
+function goToMenu() {
+    // Limpar qualquer resto de jogo
+    gameActive = false;
+    clearInterval(gameInterval);
+    clearInterval(spawnInterval);
+    clearInterval(cakeInterval);
+    
+    // Limpar a tela de jogo
+    const gameScreen = document.getElementById('gameScreen');
+    while (gameScreen.firstChild) {
+        gameScreen.removeChild(gameScreen.firstChild);
+    }
+    
+    // Recriar header para próximo jogo
+    gameScreen.innerHTML = `
+        <div class="game-header">
+            <div class="score">❤️ <span id="scoreDisplay">0</span></div>
+            <div class="timer">⏱️ <span id="timerDisplay">30</span>s</div>
+        </div>
+    `;
+    
+    // Voltar para o menu inicial
+    document.getElementById('endScreen').classList.remove('active');
+    document.getElementById('gameScreen').classList.remove('active');
+    document.getElementById('startScreen').classList.add('active');
+}
+
+function getDifficultyName() {
+    const names = {
+        'easy': 'Fácil',
+        'medium': 'Moderado',
+        'hard': 'Difícil'
+    };
+    return names[currentDifficulty] || 'Moderado';
 }
 
 // Prevenir scroll em mobile durante o jogo

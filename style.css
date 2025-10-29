@@ -126,9 +126,9 @@ button:active {
 
 .difficulty-btn {
     width: 100%;
-    margin: 10px 0;
-    padding: 18px 30px;
-    font-size: 1.2em;
+    margin: 8px 0;
+    padding: 15px 25px;
+    font-size: 1.1em;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -167,6 +167,24 @@ button:active {
     font-size: 0.75em;
     opacity: 0.9;
     font-weight: 400;
+}
+
+.end-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    max-width: 300px;
+    margin-top: 10px;
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #9b4a6d 0%, #7a3a56 100%);
+    box-shadow: 0 8px 20px rgba(155, 74, 109, 0.3);
+}
+
+.btn-secondary:hover {
+    box-shadow: 0 12px 25px rgba(155, 74, 109, 0.4);
 }
 
 .game-screen {
