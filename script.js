@@ -34,7 +34,7 @@ const difficulties = {
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
 // Função para verificar se uma posição colide com elementos existentes
-function isPositionSafe(x, y, minDistance = 150) {
+function isPositionSafe(x, y, minDistance = 120) {
     for (let element of activeElements) {
         const distance = Math.sqrt(
             Math.pow(x - element.x, 2) + Math.pow(y - element.y, 2)
@@ -61,14 +61,15 @@ function getValidPosition() {
         elementSize = 90;
     }
     
-    // Margem muito grande para garantir que nada fique nas bordas
-    const margin = elementSize * 2; // Dobro do tamanho do elemento
+    // Margem menor mas segura
+    const halfElement = elementSize / 2;
+    const margin = halfElement + 20; // metade do elemento + 20px de segurança
     const headerHeight = 80; // Altura do header
     
     const maxX = screenWidth - margin;
     const minX = margin;
     const maxY = screenHeight - margin;
-    const minY = headerHeight + margin; // Bem abaixo do header
+    const minY = headerHeight + margin; // Abaixo do header
     
     // Garantir que temos espaço suficiente para spawnar
     if (maxX <= minX || maxY <= minY) {
@@ -82,12 +83,12 @@ function getValidPosition() {
     let attempts = 0;
     let x, y;
     
-    // Tentar até 50 vezes encontrar uma posição válida
+    // Tentar até 100 vezes encontrar uma posição válida
     do {
         x = minX + Math.random() * (maxX - minX);
         y = minY + Math.random() * (maxY - minY);
         attempts++;
-    } while (!isPositionSafe(x, y, 180) && attempts < 50); // Distância mínima de 180px
+    } while (!isPositionSafe(x, y, 120) && attempts < 100); // Distância mínima de 120px entre centros
     
     return { x, y };
 }
@@ -185,11 +186,17 @@ function spawnHeart() {
     // Obter posição válida (sem colisões)
     const position = getValidPosition();
     
-    // Centralizar o elemento na posição (ajustar pelo tamanho do elemento)
-    heart.style.left = (position.x - 40) + 'px'; // 40 = metade do width
-    heart.style.top = (position.y - 40) + 'px';  // 40 = metade do height
+    // Obter tamanho real do elemento
+    let elementSize = 80;
+    if (window.innerWidth <= 400) elementSize = 70;
+    if (window.innerHeight >= 700) elementSize = 90;
+    const halfSize = elementSize / 2;
     
-    // Registrar posição do elemento
+    // Centralizar o elemento na posição
+    heart.style.left = (position.x - halfSize) + 'px';
+    heart.style.top = (position.y - halfSize) + 'px';
+    
+    // Registrar posição do elemento (centro)
     const elementData = { x: position.x, y: position.y, element: heart };
     activeElements.push(elementData);
     
@@ -202,7 +209,7 @@ function spawnHeart() {
             updateScore();
             playTapSound();
             
-            // Remover da lista de elementos ativos
+            // Remover da lista de elementos ativos IMEDIATAMENTE
             const index = activeElements.findIndex(el => el.element === heart);
             if (index > -1) activeElements.splice(index, 1);
             
@@ -247,17 +254,26 @@ function spawnCake() {
     // Obter posição válida (sem colisões)
     const position = getValidPosition();
     
-    // Centralizar o elemento na posição (ajustar pelo tamanho do elemento)
-    cake.style.left = (position.x - 40) + 'px'; // 40 = metade do width
-    cake.style.top = (position.y - 40) + 'px';  // 40 = metade do height
+    // Obter tamanho real do elemento
+    let elementSize = 80;
+    if (window.innerWidth <= 400) elementSize = 70;
+    if (window.innerHeight >= 700) elementSize = 90;
+    const halfSize = elementSize / 2;
     
-    // Registrar posição do elemento
+    // Centralizar o elemento na posição
+    cake.style.left = (position.x - halfSize) + 'px';
+    cake.style.top = (position.y - halfSize) + 'px';
+    
+    // Registrar posição do elemento (centro)
     const elementData = { x: position.x, y: position.y, element: cake };
     activeElements.push(elementData);
     
     // Adicionar evento de clique - GAME OVER!
     cake.onclick = () => {
         if (!gameActive) return;
+        // Remover da lista de elementos ativos ANTES de game over
+        const index = activeElements.findIndex(el => el.element === cake);
+        if (index > -1) activeElements.splice(index, 1);
         gameOver();
     };
     
