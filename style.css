@@ -14,7 +14,8 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
     position: relative;
 }
 
@@ -47,6 +48,31 @@ body::before {
     z-index: 1;
 }
 
+#startScreen {
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: 100vh;
+    padding: 20px 15px;
+}
+
+#startScreen::-webkit-scrollbar {
+    width: 6px;
+}
+
+#startScreen::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+}
+
+#startScreen::-webkit-scrollbar-thumb {
+    background: rgba(212, 86, 122, 0.5);
+    border-radius: 10px;
+}
+
+#startScreen::-webkit-scrollbar-thumb:hover {
+    background: rgba(212, 86, 122, 0.7);
+}
+
 .screen {
     display: none;
     text-align: center;
@@ -57,7 +83,7 @@ body::before {
 .screen.active {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
 }
 
@@ -76,14 +102,15 @@ h1 {
     font-family: 'Dancing Script', cursive;
     font-size: 3em;
     color: #d4567a;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
+    margin-top: 10px;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
 }
 
 .subtitle {
     font-size: 1.2em;
     color: #9b4a6d;
-    margin-bottom: 30px;
+    margin-bottom: 15px;
     font-weight: 300;
 }
 
@@ -309,7 +336,7 @@ button:active {
 
 .emoji-big {
     font-size: 3em;
-    margin: 10px 0;
+    margin: 5px 0;
     animation: float 2s ease-in-out infinite;
 }
 
